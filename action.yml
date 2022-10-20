@@ -44,7 +44,7 @@ runs:
                       "https://api.github.com/repos/${{ github.repository }}/actions/workflows/$workflow_id/runs?per_page=10&status=completed&branch=${{ inputs.branch }}" | \
                       jq -r '[.workflow_runs[] | select(.conclusion != "skipped")][0].conclusion')
         echo "status of the previous build: $last_status"
-        echo "::set-output name=last_status::$last_status"
+        echo "last_status=$last_status" >> $GITHUB_OUTPUT
         needs_context="${{ inputs.needs_context }}"
         if [[ $(echo $needs_context | grep "result: failure") ]]; then
             current_status=failure
@@ -52,19 +52,19 @@ runs:
             current_status=success
         fi
         echo "status of the current build: $current_status"
-        echo "::set-output name=current_status::$current_status"
+        echo "current_status=$current_status" >> $GITHUB_OUTPUT
         if [[ "${{ inputs.notify_on_changed_status }}" ]]; then
             if [[ $current_status == $last_status ]]; then
-              echo "::set-output name=should_send_message::no"
+              echo "should_send_message=no" >> $GITHUB_OUTPUT
             else
-              echo "::set-output name=should_send_message::yes"
+              echo "should_send_message=yes" >> $GITHUB_OUTPUT
             fi
         else
           if [[ $current_status == failure ]]; then
-            echo "::set-output name=should_send_message::yes"
+            echo "should_send_message=yes" >> $GITHUB_OUTPUT
           elif [[ $last_status == failure ]]; then
-            echo "::set-output name=should_send_message::yes"
+            echo "should_send_message=yes" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=should_send_message::no"
+            echo "should_send_message=no" >> $GITHUB_OUTPUT
           fi
         fi
