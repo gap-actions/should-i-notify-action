@@ -46,15 +46,15 @@ runs:
         echo "workflow id: $workflow_id"
         jobs_url=$(curl --silent --header 'authorization: Bearer ${{ inputs.github_token }}' \
                       --header 'content-type: application/json' \
-                      "https://api.github.com/repos/${{ github.repository }}/actions/workflows/$workflow_id/runs?per_page=10&status=completed&branch=${{ inputs.branch }}" | \
-                      jq -r '[.workflow_runs[] | select(.event == "${{ inputs.event }}")][0].jobs_url')
-        echo "job_url is $job_url"
+                      "https://api.github.com/repos/${{ github.repository }}/actions/workflows/$workflow_id/runs?per_page=10&status=completed&branch=${{ inputs.branch }}&event=${{ inputs.event }}" | \
+                      jq -r '[.workflow_runs[] | select(.conclusion != "skipped")][0].jobs_url')
+        echo "jobs_url is $jobs_url"
         job_name=$(echo $needs_context | awk '{print $2}' | sed 's/://')
         echo "job_name is $job_name"
         last_status=$(curl --silent --header 'authorization: Bearer ${{ inputs.github_token }}' \
                       --header 'content-type: application/json' \
                       $jobs_url | \
-                      jq -r '[.jobs[] | select(.name == "$job_name")][0].conclusion')
+                      jq -r "[.jobs[] | select(.name == \"$job_name\")][0].conclusion")
         echo "status of the previous build: $last_status"
         echo "last_status=$last_status" >> $GITHUB_OUTPUT
         if [[ $(echo $needs_context | grep "result: failure") ]]; then
