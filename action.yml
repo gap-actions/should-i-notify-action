@@ -54,7 +54,7 @@ runs:
         last_status=$(curl --silent --header 'authorization: Bearer ${{ inputs.github_token }}' \
                       --header 'content-type: application/json' \
                       $jobs_url | \
-                      jq -r '[.jobs[] | select(.name == "$job_name")][0].conclusion')
+                      jq -r "[.jobs[] | select(.name == \"$job_name\")][0].conclusion")
         echo "status of the previous build: $last_status"
         echo "last_status=$last_status" >> $GITHUB_OUTPUT
         if [[ $(echo $needs_context | grep "result: failure") ]]; then
