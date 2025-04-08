@@ -51,13 +51,13 @@ In this case, the action will take into account the result of `job1` and `job2` 
 job1:
   runs-on: ubuntu-latest
   steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Run the script
       run: ./script1.sh
 job2:
   runs-on: ubuntu-latest
   steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Run the script
       run: ./script2.sh
       
